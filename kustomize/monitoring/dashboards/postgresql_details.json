@@ -2,13 +2,14 @@
   "__inputs": [
     {
       "name": "DS_PROMETHEUS",
-      "label": "PROMETHEUS",
+      "label": "Prometheus",
       "description": "",
       "type": "datasource",
       "pluginId": "prometheus",
       "pluginName": "Prometheus"
     }
   ],
+  "__elements": [],
   "__requires": [
     {
       "type": "panel",
@@ -20,12 +21,12 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "7.4.5"
+      "version": "8.3.3"
     },
     {
       "type": "panel",
       "id": "graph",
-      "name": "Graph",
+      "name": "Graph (old)",
       "version": ""
     },
     {
@@ -50,15 +51,21 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1624495934950,
+  "iteration": 1640172735392,
   "links": [
     {
       "asDropdown": false,
@@ -72,16 +79,18 @@
       "type": "dashboards"
     }
   ],
+  "liveNow": false,
   "panels": [
     {
-      "cacheTimeout": null,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "custom": {},
           "links": [
             {
               "title": "pgBackrest",
@@ -90,11 +99,13 @@
           ],
           "mappings": [
             {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
             }
           ],
           "thresholds": {
@@ -125,7 +136,6 @@
         "y": 0
       },
       "id": 27,
-      "interval": null,
       "links": [
         {
           "title": "pgBackRest",
@@ -148,10 +158,10 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "targets": [
         {
-          "expr": "min(ccp_backrest_last_incr_backup_time_since_completion_seconds{pg_cluster=\"[[cluster]]\"} < ccp_backrest_last_diff_backup_time_since_completion_seconds{pg_cluster=\"[[cluster]]\"} or ccp_backrest_last_incr_backup_time_since_completion_seconds{pg_cluster=\"[[cluster]]\"} < ccp_backrest_last_full_backup_time_since_completion_seconds{pg_cluster=\"[[cluster]]\"} or ccp_backrest_last_incr_backup_time_since_completion_seconds{pg_cluster=\"[[cluster]]\"}) ",
+          "expr": "min(ccp_backrest_last_incr_backup_time_since_completion_seconds{pg_cluster=\"$cluster\"} < ccp_backrest_last_diff_backup_time_since_completion_seconds{pg_cluster=\"$cluster\"} or ccp_backrest_last_incr_backup_time_since_completion_seconds{pg_cluster=\"$cluster\"} < ccp_backrest_last_full_backup_time_since_completion_seconds{pg_cluster=\"$cluster\"} or ccp_backrest_last_incr_backup_time_since_completion_seconds{pg_cluster=\"$cluster\"}) ",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -159,27 +169,28 @@
           "refId": "A"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "[[cluster]] : Backup Status",
+      "title": "$cluster : Backup Status",
       "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "custom": {},
           "mappings": [
             {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
             }
           ],
           "max": 100,
@@ -212,7 +223,6 @@
         "y": 2
       },
       "id": 8,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -228,10 +238,10 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "targets": [
         {
-          "expr": "sum(pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\", state=\"active\"})*100 /sum(pg_settings_max_connections{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(pg_stat_activity_count{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\", state=\"active\"})*100 /sum(pg_settings_max_connections{pg_cluster=\"$cluster\",pod=~\"$pod\"})",
           "format": "time_series",
           "hide": false,
           "instant": true,
@@ -247,21 +257,24 @@
       "type": "gauge"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "custom": {},
           "mappings": [
             {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
             }
           ],
           "max": 100,
@@ -294,7 +307,6 @@
         "y": 2
       },
       "id": 2,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -310,10 +322,10 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "targets": [
         {
-          "expr": "sum(pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle in transaction\"})/sum(pg_settings_max_connections{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(pg_stat_activity_count{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\",state=\"idle in transaction\"})/sum(pg_settings_max_connections{pg_cluster=\"$cluster\",pod=~\"$pod\"})",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -326,22 +338,25 @@
       "type": "gauge"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "custom": {},
           "mappings": [
             {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
             }
           ],
           "max": 1200,
@@ -374,7 +389,6 @@
         "y": 2
       },
       "id": 34,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -390,10 +404,10 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "targets": [
         {
-          "expr": "max(abs(ccp_connection_stats_max_idle_in_txn_time{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}))",
+          "expr": "max(abs(ccp_connection_stats_max_idle_in_txn_time{pg_cluster=\"$cluster\",pod=~\"$pod\"}))",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -406,21 +420,24 @@
       "type": "gauge"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "custom": {},
           "mappings": [
             {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
             }
           ],
           "max": 100,
@@ -453,7 +470,6 @@
         "y": 2
       },
       "id": 3,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -469,10 +485,10 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "targets": [
         {
-          "expr": "sum(pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle\"})*100/sum(pg_settings_max_connections{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(pg_stat_activity_count{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\",state=\"idle\"})*100/sum(pg_settings_max_connections{pg_cluster=\"$cluster\",pod=~\"$pod\"})",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -487,21 +503,24 @@
       "type": "gauge"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "custom": {},
           "mappings": [
             {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
             }
           ],
           "max": 100,
@@ -534,7 +553,6 @@
         "y": 2
       },
       "id": 32,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -550,10 +568,10 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "targets": [
         {
-          "expr": "max(ccp_transaction_wraparound_percent_towards_wraparound{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "max(ccp_transaction_wraparound_percent_towards_wraparound{pg_cluster=\"$cluster\",pod=~\"$pod\"})",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -568,22 +586,25 @@
       "type": "gauge"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "custom": {},
           "mappings": [
             {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
             }
           ],
           "max": 100,
@@ -616,7 +637,6 @@
         "y": 2
       },
       "id": 33,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -632,10 +652,10 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "targets": [
         {
-          "expr": "sum(ccp_stat_database_blks_hit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})*100/sum(ccp_stat_database_blks_hit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}+ccp_stat_database_blks_read{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(ccp_stat_database_blks_hit{pg_cluster=\"$cluster\",pod=~\"$pod\"})*100/sum(ccp_stat_database_blks_hit{pg_cluster=\"$cluster\",pod=~\"$pod\"}+ccp_stat_database_blks_read{pg_cluster=\"$cluster\",pod=~\"$pod\"})",
           "format": "time_series",
           "instant": true,
           "interval": "",
@@ -654,10 +674,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -691,7 +713,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -701,7 +723,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(irate(ccp_stat_database_xact_commit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m])) + sum(irate(ccp_stat_database_xact_rollback{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(irate(ccp_stat_database_xact_commit{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\"}[5m])) + sum(irate(ccp_stat_database_xact_rollback{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\"}[5m]))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -712,7 +734,7 @@
           "step": 2
         },
         {
-          "expr": "sum(irate(ccp_pg_stat_statements_total_calls_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(irate(ccp_pg_stat_statements_total_calls_count{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\"}[5m]))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -724,10 +746,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Activity -  [[pod]]-[[datname]]",
+      "title": "Activity -  $pod-$datname",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -735,33 +755,25 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -769,10 +781,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -806,7 +820,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -816,7 +830,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum by (state) (pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle\"})",
+          "expr": "sum by (state) (pg_stat_activity_count{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\",state=\"idle\"})",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -827,7 +841,7 @@
           "step": 2
         },
         {
-          "expr": "sum by (state) (pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"idle in transaction\"})",
+          "expr": "sum by (state) (pg_stat_activity_count{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\",state=\"idle in transaction\"})",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -835,7 +849,7 @@
           "refId": "B"
         },
         {
-          "expr": "sum by (state) (pg_stat_activity_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",state=\"active\"})",
+          "expr": "sum by (state) (pg_stat_activity_count{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\",state=\"active\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "active",
@@ -843,10 +857,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Connections -  [[pod]]-[[datname]]",
+      "title": "Connections -  $pod-$datname",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -854,33 +866,25 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -888,10 +892,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -926,7 +932,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -936,15 +942,15 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(ccp_database_size_bytes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})/(1024*1024)",
+          "expr": "sum(ccp_database_size_bytes{pg_cluster=\"$cluster\",pod=~\"$pod\"})/(1024*1024)",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
-          "legendFormat": "Total : [[cluster]]-[[pod]]",
+          "legendFormat": "Total : $cluster-$pod",
           "refId": "B"
         },
         {
-          "expr": "ccp_database_size_bytes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname=~\"[[datname]]\"}/(1024*1024)",
+          "expr": "ccp_database_size_bytes{pg_cluster=\"$cluster\",pod=~\"$pod\",dbname=~\"$datname\"}/(1024*1024)",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "{{dbname}} ({{pod}})",
@@ -952,10 +958,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "database size - [[pod]]-[[datname]]",
+      "title": "database size - $pod-$datname",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -963,33 +967,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "decmbytes",
-          "label": null,
           "logBase": 2,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -999,11 +994,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -1037,7 +1034,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1056,7 +1053,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "max(ccp_pg_stat_statements_total_mean_exec_time_ms{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\", dbname=~\"[[datname]]\"}) without (instance,ip)",
+          "expr": "max(ccp_pg_stat_statements_total_mean_exec_time_ms{pg_cluster=\"$cluster\",pod=~\"$pod\", dbname=~\"$datname\"}) without (instance,ip)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1067,7 +1064,7 @@
           "step": 2
         },
         {
-          "expr": "max(ccp_pg_stat_statements_top_max_exec_time_ms{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname=~\"[[datname]]\"}) without (instance,ip,query,queryid)",
+          "expr": "max(ccp_pg_stat_statements_top_max_exec_time_ms{pg_cluster=\"$cluster\",pod=~\"$pod\",dbname=~\"$datname\"}) without (instance,ip,query,queryid)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1079,10 +1076,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Query Duration - [[pod]]-[[datname]]",
+      "title": "Query Duration - $pod-$datname",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1090,33 +1085,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "ms",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1124,10 +1110,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -1162,7 +1150,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1172,7 +1160,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(irate(ccp_stat_database_tup_fetched{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(irate(ccp_stat_database_tup_fetched{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\"}[5m]))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1183,7 +1171,7 @@
           "step": 2
         },
         {
-          "expr": "sum(irate(ccp_stat_database_tup_inserted{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(irate(ccp_stat_database_tup_inserted{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\"}[5m]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1193,7 +1181,7 @@
           "step": 2
         },
         {
-          "expr": "sum(irate(ccp_stat_database_tup_updated{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(irate(ccp_stat_database_tup_updated{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\"}[5m]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1203,7 +1191,7 @@
           "step": 2
         },
         {
-          "expr": "sum(irate(ccp_stat_database_tup_deleted{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(irate(ccp_stat_database_tup_deleted{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\"}[5m]))",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "Deleted",
@@ -1212,7 +1200,7 @@
           "step": 2
         },
         {
-          "expr": "sum(irate(ccp_stat_database_tup_returned{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(irate(ccp_stat_database_tup_returned{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\"}[5m]))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -1223,10 +1211,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Row activity - [[pod]]-[[datname]]",
+      "title": "Row activity - $pod-$datname",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1234,33 +1220,25 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 2,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1268,10 +1246,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -1306,7 +1286,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1316,7 +1296,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "ccp_wal_activity_total_size_bytes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}/(1024*1024)",
+          "expr": "ccp_wal_activity_total_size_bytes{pg_cluster=\"$cluster\",pod=~\"$pod\"}/(1024*1024)",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1325,10 +1305,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "WAL size MB - [[cluster]]-[[pod]]",
+      "title": "WAL size MB - $cluster-$pod",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1336,33 +1314,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "decmbytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1370,10 +1339,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -1408,7 +1379,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1435,7 +1406,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(ccp_stat_database_deadlocks{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(rate(ccp_stat_database_deadlocks{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\"}[5m]))",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1445,7 +1416,7 @@
           "step": 2
         },
         {
-          "expr": "sum(rate(ccp_stat_database_conflicts{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(rate(ccp_stat_database_conflicts{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\"}[5m]))",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "DeadLocks",
@@ -1454,7 +1425,7 @@
           "step": 2
         },
         {
-          "expr": "sum(irate(ccp_stat_database_xact_commit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(irate(ccp_stat_database_xact_commit{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\"}[5m]))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1465,7 +1436,7 @@
           "step": 2
         },
         {
-          "expr": "sum(irate(ccp_stat_database_xact_rollback{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\"}[5m]))",
+          "expr": "sum(irate(ccp_stat_database_xact_rollback{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\"}[5m]))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1477,10 +1448,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Key Counters - [[pod]] - [[datname]]",
+      "title": "Key Counters - $pod - $datname",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1488,33 +1457,25 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1522,11 +1483,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -1563,7 +1526,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1579,7 +1542,7 @@
       "targets": [
         {
           "exemplar": false,
-          "expr": "ccp_replication_lag_size_bytes{pg_cluster=\"[[cluster]]\", role!=\"replica\"}",
+          "expr": "ccp_replication_lag_size_bytes{pg_cluster=\"$cluster\", role!=\"replica\"}",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -1589,7 +1552,7 @@
           "refId": "B"
         },
         {
-          "expr": "ccp_replication_lag_replay_time{pg_cluster=\"[[cluster]]\", role=\"replica\"}",
+          "expr": "ccp_replication_lag_replay_time{pg_cluster=\"$cluster\", role=\"replica\"}",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1599,10 +1562,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Replication Lag - [[cluster]]",
+      "title": "Replication Lag - $cluster",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1610,9 +1571,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -1621,7 +1580,6 @@
           "format": "short",
           "label": "Lag bytes",
           "logBase": 1,
-          "max": null,
           "min": 0,
           "show": true
         },
@@ -1629,14 +1587,12 @@
           "format": "dtdhms",
           "label": "Lag time (hh:mm:ss)",
           "logBase": 1,
-          "max": null,
           "min": 0,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1644,10 +1600,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -1682,7 +1640,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1692,7 +1650,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(ccp_stat_bgwriter_buffers_alloc{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(ccp_stat_bgwriter_buffers_alloc{pg_cluster=\"$cluster\",pod=~\"$pod\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "Allocated",
@@ -1701,7 +1659,7 @@
           "step": 2
         },
         {
-          "expr": "sum(ccp_stat_bgwriter_buffers_backend{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(ccp_stat_bgwriter_buffers_backend{pg_cluster=\"$cluster\",pod=~\"$pod\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "Backend",
@@ -1710,7 +1668,7 @@
           "step": 2
         },
         {
-          "expr": "sum(ccp_stat_bgwriter_buffers_backend_fsync{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(ccp_stat_bgwriter_buffers_backend_fsync{pg_cluster=\"$cluster\",pod=~\"$pod\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "FSync",
@@ -1719,7 +1677,7 @@
           "step": 2
         },
         {
-          "expr": "sum(ccp_stat_bgwriter_buffers_checkpoint{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(ccp_stat_bgwriter_buffers_checkpoint{pg_cluster=\"$cluster\",pod=~\"$pod\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "CheckPoint",
@@ -1728,7 +1686,7 @@
           "step": 2
         },
         {
-          "expr": "sum(ccp_stat_bgwriter_buffers_clean{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})",
+          "expr": "sum(ccp_stat_bgwriter_buffers_clean{pg_cluster=\"$cluster\",pod=~\"$pod\"})",
           "format": "time_series",
           "intervalFactor": 2,
           "legendFormat": "Clean",
@@ -1738,10 +1696,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Buffers - [[pod]]",
+      "title": "Buffers - $pod",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1749,33 +1705,25 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1783,10 +1731,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -1821,7 +1771,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1831,7 +1781,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",mode=\"accessexclusivelock\"})",
+          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\",mode=\"accessexclusivelock\"})",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1841,7 +1791,7 @@
           "step": 2
         },
         {
-          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",mode=\"exclusivelock\"})",
+          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\",mode=\"exclusivelock\"})",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1850,7 +1800,7 @@
           "step": 2
         },
         {
-          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",mode=\"rowexclusivelock\"})",
+          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\",mode=\"rowexclusivelock\"})",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1859,7 +1809,7 @@
           "step": 2
         },
         {
-          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",mode=\"sharerowexclusivelock\"})",
+          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\",mode=\"sharerowexclusivelock\"})",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1868,7 +1818,7 @@
           "step": 2
         },
         {
-          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",mode=\"shareupdateexclusivelock\"})",
+          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\",mode=\"shareupdateexclusivelock\"})",
           "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
@@ -1877,7 +1827,7 @@
           "step": 2
         },
         {
-          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",datname=~\"[[datname]]\",mode=\"accesssharelock\"})",
+          "expr": "sum by (mode) (ccp_locks_count{pg_cluster=\"$cluster\",pod=~\"$pod\",datname=~\"$datname\",mode=\"accesssharelock\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{mode}}",
@@ -1885,10 +1835,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Locks - [[pod]]-[[datname]]",
+      "title": "Locks - $pod-$datname",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1896,33 +1844,25 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -1930,10 +1870,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -1968,7 +1910,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1978,7 +1920,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "ccp_stat_database_blks_hit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\", dbname!~\"template0\", dbname!~\"template1\"}*100/(ccp_stat_database_blks_hit{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\", dbname!~\"template0\", dbname!~\"template1\"} + ccp_stat_database_blks_read{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\",dbname!~\"template0\", dbname!~\"template1\"})",
+          "expr": "ccp_stat_database_blks_hit{pg_cluster=\"$cluster\",pod=~\"$pod\", dbname!~\"template0\", dbname!~\"template1\"}*100/(ccp_stat_database_blks_hit{pg_cluster=\"$cluster\",pod=~\"$pod\", dbname!~\"template0\", dbname!~\"template1\"} + ccp_stat_database_blks_read{pg_cluster=\"$cluster\",pod=~\"$pod\",dbname!~\"template0\", dbname!~\"template1\"})",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -1988,10 +1930,8 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Cache Hit Ratio - [[pod]]-[[datname]]",
+      "title": "Cache Hit Ratio - $pod-$datname",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1999,17 +1939,13 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -2017,21 +1953,17 @@
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 27,
+  "schemaVersion": 34,
   "style": "dark",
   "tags": [
     "vendor=crunchydata"
@@ -2040,12 +1972,12 @@
     "list": [
       {
         "allFormat": "glob",
-        "allValue": null,
         "current": {},
-        "datasource": "PROMETHEUS",
-        "definition": "",
-        "description": null,
-        "error": null,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "pg_up",
         "hide": 0,
         "includeAll": false,
         "label": "cluster",
@@ -2053,15 +1985,14 @@
         "name": "cluster",
         "options": [],
         "query": {
-          "query": "label_values(pg_cluster)",
-          "refId": "PROMETHEUS-cluster-Variable-Query"
+          "query": "pg_up",
+          "refId": "StandardVariableQuery"
         },
         "refresh": 1,
-        "regex": "",
+        "regex": "/.*postgres_operator_crunchydata_com_cluster=\"([^\"]*).*/",
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
@@ -2070,10 +2001,11 @@
         "allFormat": "glob",
         "allValue": ".*",
         "current": {},
-        "datasource": "PROMETHEUS",
-        "definition": "label_values({pg_cluster=\"[[cluster]]\"},pod)",
-        "description": null,
-        "error": null,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values({pg_cluster=\"$cluster\"},pod)",
         "hide": 0,
         "includeAll": true,
         "label": "pod",
@@ -2081,7 +2013,7 @@
         "name": "pod",
         "options": [],
         "query": {
-          "query": "label_values({pg_cluster=\"[[cluster]]\"},pod)",
+          "query": "label_values({pg_cluster=\"$cluster\"},pod)",
           "refId": "PROMETHEUS-pod-Variable-Query"
         },
         "refresh": 1,
@@ -2089,7 +2021,6 @@
         "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
@@ -2098,10 +2029,11 @@
         "allFormat": "glob",
         "allValue": ".*",
         "current": {},
-        "datasource": "PROMETHEUS",
-        "definition": "label_values({pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"},dbname)",
-        "description": null,
-        "error": null,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values({pg_cluster=\"$cluster\",pod=~\"$pod\"},dbname)",
         "hide": 0,
         "includeAll": true,
         "label": "Database",
@@ -2109,7 +2041,7 @@
         "name": "datname",
         "options": [],
         "query": {
-          "query": "label_values({pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"},dbname)",
+          "query": "label_values({pg_cluster=\"$cluster\",pod=~\"$pod\"},dbname)",
           "refId": "PROMETHEUS-datname-Variable-Query"
         },
         "refresh": 1,
@@ -2117,7 +2049,6 @@
         "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
@@ -2144,5 +2075,6 @@
   "timezone": "browser",
   "title": "PostgreSQLDetails",
   "uid": "pc4NNgknk",
-  "version": 1
+  "version": 1,
+  "weekStart": ""
 }

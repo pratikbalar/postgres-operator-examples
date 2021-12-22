@@ -2,24 +2,25 @@
   "__inputs": [
     {
       "name": "DS_PROMETHEUS",
-      "label": "PROMETHEUS",
+      "label": "Prometheus",
       "description": "",
       "type": "datasource",
       "pluginId": "prometheus",
       "pluginName": "Prometheus"
     }
   ],
+  "__elements": [],
   "__requires": [
     {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "7.4.5"
+      "version": "8.3.3"
     },
     {
       "type": "panel",
       "id": "graph",
-      "name": "Graph",
+      "name": "Graph (old)",
       "version": ""
     },
     {
@@ -38,15 +39,21 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1624491530019,
+  "iteration": 1640172886273,
   "links": [
     {
       "asDropdown": false,
@@ -60,16 +67,19 @@
       "type": "dashboards"
     }
   ],
+  "liveNow": false,
   "panels": [
     {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -104,7 +114,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -114,7 +124,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(ccp_connection_stats_total{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}) without (pod,instance,ip) / sum(ccp_connection_stats_max_connections{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}) without (pod,instance,ip)",
+          "expr": "sum(ccp_connection_stats_total{pg_cluster=\"$cluster\",role=\"$role\"}) without (pod,instance,ip) / sum(ccp_connection_stats_max_connections{pg_cluster=\"$cluster\",role=\"$role\"}) without (pod,instance,ip)",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -123,7 +133,7 @@
           "refId": "C"
         },
         {
-          "expr": "100 - 100 * avg(ccp_nodemx_data_disk_available_bytes{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}) without (pod,instance,ip) / avg(ccp_nodemx_data_disk_total_bytes{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"})  without (pod,instance,ip)",
+          "expr": "100 - 100 * avg(ccp_nodemx_data_disk_available_bytes{pg_cluster=\"$cluster\",role=\"$role\"}) without (pod,instance,ip) / avg(ccp_nodemx_data_disk_total_bytes{pg_cluster=\"$cluster\",role=\"$role\"})  without (pod,instance,ip)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -132,9 +142,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Saturation (pct used)",
       "tooltip": {
         "shared": true,
@@ -143,17 +151,13 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -161,28 +165,25 @@
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -217,7 +218,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -228,7 +229,7 @@
       "targets": [
         {
           "exemplar": false,
-          "expr": "  sum(irate(ccp_stat_database_xact_commit{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}[1m])) \n+ sum(irate(ccp_stat_database_xact_rollback{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}[1m]))",
+          "expr": "  sum(irate(ccp_stat_database_xact_commit{pg_cluster=\"$cluster\",role=\"$role\"}[1m])) \n+ sum(irate(ccp_stat_database_xact_rollback{pg_cluster=\"$cluster\",role=\"$role\"}[1m]))",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -236,7 +237,7 @@
           "refId": "A"
         },
         {
-          "expr": "max(ccp_connection_stats_active{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}) without (pod,instance,ip,dbname)",
+          "expr": "max(ccp_connection_stats_active{pg_cluster=\"$cluster\",role=\"$role\"}) without (pod,instance,ip,dbname)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -244,7 +245,7 @@
           "refId": "C"
         },
         {
-          "expr": "sum(irate(ccp_pg_stat_statements_total_calls_count{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}[1m]))",
+          "expr": "sum(irate(ccp_pg_stat_statements_total_calls_count{pg_cluster=\"$cluster\",role=\"$role\"}[1m]))",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -254,9 +255,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Traffic",
       "tooltip": {
         "shared": true,
@@ -265,9 +264,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -276,22 +273,17 @@
           "format": "short",
           "label": "",
           "logBase": 1,
-          "max": null,
           "min": "0.001",
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -299,11 +291,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "description": "Errors",
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -338,7 +332,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -348,7 +342,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(irate(ccp_stat_database_xact_rollback{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}[1m]) without(pod,instance,ip))",
+          "expr": "sum(irate(ccp_stat_database_xact_rollback{pg_cluster=\"$cluster\",role=\"$role\"}[1m]) without(pod,instance,ip))",
           "format": "time_series",
           "hide": true,
           "interval": "",
@@ -357,7 +351,7 @@
           "refId": "A"
         },
         {
-          "expr": "sum(irate(ccp_stat_database_deadlocks{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}[1m]))  without(pod,instance,ip,dbname)",
+          "expr": "sum(irate(ccp_stat_database_deadlocks{pg_cluster=\"$cluster\",role=\"$role\"}[1m]))  without(pod,instance,ip,dbname)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -366,7 +360,7 @@
           "refId": "D"
         },
         {
-          "expr": "sum(irate(ccp_stat_database_conflicts{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}[1m])) without(pod,instance,ip,dbname)",
+          "expr": "sum(irate(ccp_stat_database_conflicts{pg_cluster=\"$cluster\",role=\"$role\"}[1m])) without(pod,instance,ip,dbname)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -375,7 +369,7 @@
           "refId": "B"
         },
         {
-          "expr": "max(pg_exporter_last_scrape_error{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}) without(pod,instance,ip,dbname)",
+          "expr": "max(pg_exporter_last_scrape_error{pg_cluster=\"$cluster\",role=\"$role\"}) without(pod,instance,ip,dbname)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -384,7 +378,7 @@
           "refId": "C"
         },
         {
-          "expr": "max(clamp_max(ccp_archive_command_status_seconds_since_last_fail{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"},1)) without (instance,pod,ip)",
+          "expr": "max(clamp_max(ccp_archive_command_status_seconds_since_last_fail{pg_cluster=\"$cluster\",role=\"$role\"},1)) without (instance,pod,ip)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -394,9 +388,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Errors",
       "tooltip": {
         "shared": true,
@@ -405,34 +397,25 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "short",
           "label": "",
           "logBase": 2,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -440,10 +423,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -478,7 +463,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -498,7 +483,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "max(ccp_pg_stat_statements_total_mean_exec_time_ms{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}) without (pod,instance,ip)",
+          "expr": "max(ccp_pg_stat_statements_total_mean_exec_time_ms{pg_cluster=\"$cluster\",role=\"$role\"}) without (pod,instance,ip)",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -508,7 +493,7 @@
           "refId": "A"
         },
         {
-          "expr": "max(ccp_pg_stat_statements_top_max_exec_time_ms{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}) without (pod,instance,ip,query,queryid)",
+          "expr": "max(ccp_pg_stat_statements_top_max_exec_time_ms{pg_cluster=\"$cluster\",role=\"$role\"}) without (pod,instance,ip,query,queryid)",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -519,9 +504,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Query Duration",
       "tooltip": {
         "shared": true,
@@ -530,39 +513,30 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "ms",
-          "label": null,
           "logBase": 2,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     }
   ],
   "refresh": "5m",
-  "schemaVersion": 27,
+  "schemaVersion": 34,
   "style": "dark",
   "tags": [
     "vendor=crunchydata"
@@ -570,47 +544,44 @@
   "templating": {
     "list": [
       {
-        "allValue": null,
         "current": {},
-        "datasource": "PROMETHEUS",
-        "definition": "label_values(pg_cluster)",
-        "description": null,
-        "error": null,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "pg_up",
         "hide": 0,
         "includeAll": false,
-        "label": null,
         "multi": false,
         "name": "cluster",
         "options": [],
         "query": {
-          "query": "label_values(pg_cluster)",
-          "refId": "PROMETHEUS-cluster-Variable-Query"
+          "query": "pg_up",
+          "refId": "StandardVariableQuery"
         },
         "refresh": 1,
-        "regex": "",
+        "regex": "/.*postgres_operator_crunchydata_com_cluster=\"([^\"]*).*/",
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
       },
       {
-        "allValue": null,
         "current": {},
-        "datasource": "PROMETHEUS",
-        "definition": "label_values({pg_cluster=\"[[cluster]]\"},role)",
-        "description": null,
-        "error": null,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values({pg_cluster=\"$cluster\"},role)",
         "hide": 0,
         "includeAll": false,
-        "label": null,
         "multi": false,
         "name": "role",
         "options": [],
         "query": {
-          "query": "label_values({pg_cluster=\"[[cluster]]\"},role)",
+          "query": "label_values({pg_cluster=\"$cluster\"},role)",
           "refId": "PROMETHEUS-role-Variable-Query"
         },
         "refresh": 1,
@@ -618,7 +589,6 @@
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
@@ -645,5 +615,6 @@
   "timezone": "browser",
   "title": "PostgreSQL Service Health",
   "uid": "dhG1wgsMz",
-  "version": 1
+  "version": 1,
+  "weekStart": ""
 }

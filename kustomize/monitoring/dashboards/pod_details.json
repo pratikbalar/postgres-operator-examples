@@ -2,24 +2,25 @@
   "__inputs": [
     {
       "name": "DS_PROMETHEUS",
-      "label": "PROMETHEUS",
+      "label": "Prometheus",
       "description": "",
       "type": "datasource",
       "pluginId": "prometheus",
       "pluginName": "Prometheus"
     }
   ],
+  "__elements": [],
   "__requires": [
     {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "7.4.5"
+      "version": "8.3.3"
     },
     {
       "type": "panel",
       "id": "graph",
-      "name": "Graph",
+      "name": "Graph (old)",
       "version": ""
     },
     {
@@ -38,15 +39,21 @@
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1624647381559,
+  "iteration": 1640169574481,
   "links": [
     {
       "icon": "external link",
@@ -58,6 +65,7 @@
       "type": "dashboards"
     }
   ],
+  "liveNow": false,
   "panels": [
     {
       "aliasColors": {
@@ -69,15 +77,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "color": {},
-          "custom": {},
-          "thresholds": {
-            "mode": "absolute",
-            "steps": []
-          },
           "unit": "short"
         },
         "overrides": []
@@ -109,7 +114,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -124,7 +129,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg((idelta(ccp_nodemx_cpuacct_usage{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}[30s])/1000000000)/idelta(ccp_nodemx_cpuacct_usage_ts{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}[30s])*100) without(instance,ip,role)",
+          "expr": "avg((idelta(ccp_nodemx_cpuacct_usage{pg_cluster=\"$cluster\",pod=\"$pod\"}[30s])/1000000000)/idelta(ccp_nodemx_cpuacct_usage_ts{pg_cluster=\"$cluster\",pod=\"$pod\"}[30s])*100) without(instance,ip,role)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -133,7 +138,7 @@
           "refId": "A"
         },
         {
-          "expr": "avg((ccp_nodemx_cpucfs_quota_us{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}*100/ccp_nodemx_cpucfs_period_us{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"})) without (instance,ip,role)",
+          "expr": "avg((ccp_nodemx_cpucfs_quota_us{pg_cluster=\"$cluster\",pod=\"$pod\"}*100/ccp_nodemx_cpucfs_period_us{pg_cluster=\"$cluster\",pod=\"$pod\"})) without (instance,ip,role)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -143,9 +148,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "CPU usage",
       "tooltip": {
         "shared": true,
@@ -154,19 +157,15 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "short",
           "label": "Percent",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -174,14 +173,12 @@
           "format": "short",
           "label": "Process count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -194,15 +191,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "color": {},
-          "custom": {},
-          "thresholds": {
-            "mode": "absolute",
-            "steps": []
-          },
           "unit": "short"
         },
         "overrides": []
@@ -234,7 +228,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -253,7 +247,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(ccp_nodemx_process_count{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_process_count{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -262,7 +256,7 @@
           "refId": "B"
         },
         {
-          "expr": "avg((idelta(ccp_nodemx_cpustat_throttled_time{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}[30s])/1000000000)/idelta(ccp_nodemx_cpustat_snap_ts{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}[30s])*100) without (instance,ip,role)",
+          "expr": "avg((idelta(ccp_nodemx_cpustat_throttled_time{pg_cluster=\"$cluster\",pod=\"$pod\"}[30s])/1000000000)/idelta(ccp_nodemx_cpustat_snap_ts{pg_cluster=\"$cluster\",pod=\"$pod\"}[30s])*100) without (instance,ip,role)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -272,9 +266,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "CPU Throttle",
       "tooltip": {
         "shared": true,
@@ -283,19 +275,15 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
-          "decimals": null,
           "format": "short",
           "label": "",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -303,14 +291,12 @@
           "format": "short",
           "label": "Process count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -323,10 +309,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -358,7 +346,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -377,7 +365,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(ccp_nodemx_mem_limit{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_mem_limit{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -385,7 +373,7 @@
           "refId": "A"
         },
         {
-          "expr": "avg(ccp_nodemx_mem_request{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_mem_request{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -393,7 +381,7 @@
           "refId": "B"
         },
         {
-          "expr": "avg(ccp_nodemx_mem_usage_in_bytes{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_mem_usage_in_bytes{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -401,7 +389,7 @@
           "refId": "J"
         },
         {
-          "expr": "avg(clamp_min((ccp_nodemx_mem_limit{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"} - ccp_nodemx_mem_usage_in_bytes{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}),0)) without (instance,ip,role)",
+          "expr": "avg(clamp_min((ccp_nodemx_mem_limit{pg_cluster=\"$cluster\",pod=\"$pod\"} - ccp_nodemx_mem_usage_in_bytes{pg_cluster=\"$cluster\",pod=\"$pod\"}),0)) without (instance,ip,role)",
           "format": "time_series",
           "hide": false,
           "interval": "",
@@ -411,9 +399,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Memory",
       "tooltip": {
         "shared": true,
@@ -422,33 +408,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "bytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -456,10 +433,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -491,7 +470,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -506,7 +485,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(rate(ccp_nodemx_network_rx_bytes{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\", interface!=\"tunl0\"}[1m])) without(instance,ip,role)",
+          "expr": "avg(rate(ccp_nodemx_network_rx_bytes{pg_cluster=\"$cluster\",pod=\"$pod\", interface!=\"tunl0\"}[1m])) without(instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -514,7 +493,7 @@
           "refId": "A"
         },
         {
-          "expr": "avg(rate(ccp_nodemx_network_tx_bytes{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\", interface!=\"tunl0\"}[1m])) without(instance,ip,role)",
+          "expr": "avg(rate(ccp_nodemx_network_tx_bytes{pg_cluster=\"$cluster\",pod=\"$pod\", interface!=\"tunl0\"}[1m])) without(instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 2,
@@ -523,9 +502,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Network",
       "tooltip": {
         "shared": true,
@@ -534,33 +511,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "Bps",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -568,10 +536,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -603,7 +573,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -613,7 +583,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg((ccp_nodemx_data_disk_total_bytes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}-ccp_nodemx_data_disk_available_bytes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})*100/ccp_nodemx_data_disk_total_bytes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg((ccp_nodemx_data_disk_total_bytes{pg_cluster=\"$cluster\",pod=~\"$pod\"}-ccp_nodemx_data_disk_available_bytes{pg_cluster=\"$cluster\",pod=~\"$pod\"})*100/ccp_nodemx_data_disk_total_bytes{pg_cluster=\"$cluster\",pod=~\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -621,7 +591,7 @@
           "refId": "A"
         },
         {
-          "expr": "avg((ccp_nodemx_data_disk_total_file_nodes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}-ccp_nodemx_data_disk_free_file_nodes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})*100/ccp_nodemx_data_disk_total_file_nodes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}) without(instance,ip,role)",
+          "expr": "avg((ccp_nodemx_data_disk_total_file_nodes{pg_cluster=\"$cluster\",pod=~\"$pod\"}-ccp_nodemx_data_disk_free_file_nodes{pg_cluster=\"$cluster\",pod=~\"$pod\"})*100/ccp_nodemx_data_disk_total_file_nodes{pg_cluster=\"$cluster\",pod=~\"$pod\"}) without(instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -630,9 +600,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Disk Usage",
       "tooltip": {
         "shared": true,
@@ -641,16 +609,13 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "percent",
-          "label": null,
           "logBase": 1,
           "max": "100",
           "min": "0",
@@ -658,16 +623,12 @@
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -675,10 +636,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -710,7 +673,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -725,7 +688,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(rate(ccp_nodemx_disk_activity_sectors_read{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}[1m])*512) without(instance,ip,role)",
+          "expr": "avg(rate(ccp_nodemx_disk_activity_sectors_read{pg_cluster=\"$cluster\",pod=\"$pod\"}[1m])*512) without(instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -733,7 +696,7 @@
           "refId": "A"
         },
         {
-          "expr": "avg(rate(ccp_nodemx_disk_activity_sectors_written{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}[1m])*512) without(instance,ip,role)",
+          "expr": "avg(rate(ccp_nodemx_disk_activity_sectors_written{pg_cluster=\"$cluster\",pod=\"$pod\"}[1m])*512) without(instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -742,9 +705,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Disk Activity",
       "tooltip": {
         "shared": true,
@@ -753,33 +714,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "Bps",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -791,10 +743,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -829,7 +783,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -839,7 +793,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(ccp_nodemx_mem_cache{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_mem_cache{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -847,7 +801,7 @@
           "refId": "C"
         },
         {
-          "expr": "avg(ccp_nodemx_mem_dirty{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_mem_dirty{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -855,7 +809,7 @@
           "refId": "D"
         },
         {
-          "expr": "avg(ccp_nodemx_mem_shmem{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_mem_shmem{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -863,7 +817,7 @@
           "refId": "E"
         },
         {
-          "expr": "avg(ccp_nodemx_mem_rss{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_mem_rss{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -871,7 +825,7 @@
           "refId": "F"
         },
         {
-          "expr": "avg(ccp_nodemx_mem_mapped_file{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_mem_mapped_file{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -879,7 +833,7 @@
           "refId": "G"
         },
         {
-          "expr": "avg(ccp_nodemx_mem_kmem_usage_in_bytes{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_mem_kmem_usage_in_bytes{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -887,7 +841,7 @@
           "refId": "H"
         },
         {
-          "expr": "avg(ccp_nodemx_mem_inactive_anon{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_mem_inactive_anon{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -895,7 +849,7 @@
           "refId": "I"
         },
         {
-          "expr": "avg(ccp_nodemx_mem_active_file{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_mem_active_file{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -903,7 +857,7 @@
           "refId": "J"
         },
         {
-          "expr": "avg(ccp_nodemx_mem_inactive_file{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_mem_inactive_file{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -912,9 +866,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Memory Breakdown",
       "tooltip": {
         "shared": true,
@@ -923,33 +875,24 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
       "yaxes": [
         {
           "format": "bytes",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         },
         {
           "format": "short",
-          "label": null,
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": false
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -962,10 +905,12 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "PROMETHEUS",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
       "fieldConfig": {
         "defaults": {
-          "custom": {},
           "links": []
         },
         "overrides": []
@@ -997,7 +942,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.4.5",
+      "pluginVersion": "8.3.3",
       "pointradius": 5,
       "points": false,
       "renderer": "flot",
@@ -1016,7 +961,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(ccp_nodemx_cpu_limit{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_cpu_limit{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1024,7 +969,7 @@
           "refId": "A"
         },
         {
-          "expr": "avg(ccp_nodemx_cpu_request{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_cpu_request{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1032,7 +977,7 @@
           "refId": "B"
         },
         {
-          "expr": "avg(ccp_nodemx_mem_limit{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_mem_limit{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1040,7 +985,7 @@
           "refId": "C"
         },
         {
-          "expr": "avg(ccp_nodemx_mem_request{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
+          "expr": "avg(ccp_nodemx_mem_request{pg_cluster=\"$cluster\",pod=\"$pod\"}) without (instance,ip,role)",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1049,9 +994,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Container resources",
       "tooltip": {
         "shared": true,
@@ -1060,9 +1003,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -1071,7 +1012,6 @@
           "format": "bytes",
           "label": "Memory",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -1079,19 +1019,17 @@
           "format": "short",
           "label": "CPU (millicores)",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     }
   ],
   "refresh": "5s",
-  "schemaVersion": 27,
+  "schemaVersion": 34,
   "style": "dark",
   "tags": [
     "vendor=crunchydata"
@@ -1099,12 +1037,12 @@
   "templating": {
     "list": [
       {
-        "allValue": null,
         "current": {},
-        "datasource": "PROMETHEUS",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
         "definition": "label_values(pg_cluster)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": "cluster",
@@ -1120,18 +1058,17 @@
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
       },
       {
-        "allValue": null,
         "current": {},
-        "datasource": "PROMETHEUS",
-        "definition": "label_values({pg_cluster=\"[[cluster]]\"},pod)",
-        "description": null,
-        "error": null,
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values({pg_cluster=\"$cluster\"},pod)",
         "hide": 0,
         "includeAll": false,
         "label": "pod",
@@ -1139,7 +1076,7 @@
         "name": "pod",
         "options": [],
         "query": {
-          "query": "label_values({pg_cluster=\"[[cluster]]\"},pod)",
+          "query": "label_values({pg_cluster=\"$cluster\"},pod)",
           "refId": "PROMETHEUS-pod-Variable-Query"
         },
         "refresh": 1,
@@ -1147,7 +1084,6 @@
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
@@ -1174,5 +1110,6 @@
   "timezone": "browser",
   "title": "POD Details",
   "uid": "4auP6Mk7k",
-  "version": 1
+  "version": 2,
+  "weekStart": ""
 }
